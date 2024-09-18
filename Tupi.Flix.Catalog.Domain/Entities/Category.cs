@@ -2,13 +2,13 @@
 {
     public class Category
     {
-        public Category(string name, string description)
+        public Category(string name, string description, bool isActive = true)
         {
             Name = name;
             Description = description;
             Id = Guid.NewGuid();
             CreatedAt = DateTime.Now;
-            IsActive = true;
+            IsActive = isActive;
         }
 
         public string Name { get; private set; }
