@@ -1,4 +1,5 @@
-﻿using DomainCategoryEntity = Tupi.Flix.Catalog.Domain.Entities.Category;
+﻿using Tupi.Flix.Catalog.Domain.Execeptions;
+using DomainCategoryEntity = Tupi.Flix.Catalog.Domain.Entities.Category;
 
 namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
 {
@@ -52,6 +53,27 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
             Assert.True(category.CreatedAt > dateTimeBefore);
             Assert.True(category.CreatedAt < dateTimeAfter);
             Assert.Equal(category.IsActive, isActive);
+        }
+
+        [Theory(DisplayName = nameof(ThrowErrorWhenNameIsEmpty))]
+        [Trait("Domain", "Category - Aggregates")]
+        [InlineData("")]
+        [InlineData(null)]
+        [InlineData("   ")]
+        public void ThrowErrorWhenNameIsEmpty(string? nameCategory)
+        {
+            Action action = () => new DomainCategoryEntity(nameCategory!, "category description");
+            var expection = Assert.Throws<EntityValidationException>(() => action());
+            Assert.Equal("Name should not be empty or null", expection.Message);
+        }
+
+        [Fact(DisplayName = nameof(ThrowErrorWhenDescriptionIsNull))]
+        [Trait("Domain", "Category - Aggregates")]
+        public void ThrowErrorWhenDescriptionIsNull()
+        {
+            Action action = () => new DomainCategoryEntity("Name Category", null!);
+            var expection = Assert.Throws<EntityValidationException>(() => action());
+            Assert.Equal("Description should not be null", expection.Message);
         }
     }
 }
