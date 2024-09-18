@@ -7,9 +7,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1FBB39DF-204
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C17C14F2-AE5F-4D81-BCAD-7331405E6292}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tupi.Flix.Catalog.UnitTests", "Tupi.Flix.Catalog.UnitTests\Tupi.Flix.Catalog.UnitTests.csproj", "{41CCFE87-B89C-4A33-9C46-25D5B19B7BD8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tupi.Flix.Catalog.UnitTests", "Tupi.Flix.Catalog.UnitTests\Tupi.Flix.Catalog.UnitTests.csproj", "{41CCFE87-B89C-4A33-9C46-25D5B19B7BD8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tupi.Flix.Catalog.Domain", "Tupi.Flix.Catalog.Domain\Tupi.Flix.Catalog.Domain.csproj", "{A5FAB1EE-63FA-47EF-971E-656E1F5EA503}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tupi.Flix.Catalog.Domain", "Tupi.Flix.Catalog.Domain\Tupi.Flix.Catalog.Domain.csproj", "{A5FAB1EE-63FA-47EF-971E-656E1F5EA503}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
