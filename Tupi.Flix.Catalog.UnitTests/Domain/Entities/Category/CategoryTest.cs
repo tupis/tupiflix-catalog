@@ -25,6 +25,7 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
             Assert.NotEqual(default(DateTime), category.CreatedAt);
             Assert.True(category.CreatedAt > dateTimeBefore);
             Assert.True(category.CreatedAt < dateTimeAfter);
+            Assert.True(category.IsActive);
         }
     }
 }
