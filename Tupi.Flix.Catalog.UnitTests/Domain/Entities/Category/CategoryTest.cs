@@ -140,6 +140,74 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
             Assert.Equal("Description should be less than 10000 character", exeption.Message);
         }
 
+        [Fact(DisplayName = nameof(Update))]
+        [Trait("Domain", "Category - Aggregates")]
+        public void Update()
+        {
+            var createData = new
+            {
+                Name = "New category name",
+                Description = "New category description",
+            };
+
+            DomainCategoryEntity category = new(createData.Name, createData.Description);
+
+            var updatedData = new
+            {
+                Name = "Updated category name",
+                Description = "Updated category description",
+            };
+
+            category.Update(updatedData.Name, updatedData.Description);
+
+            Assert.Equal(category.Name, updatedData.Name);
+            Assert.Equal(category.Description, updatedData.Description);
+        }
+
+        [Fact(DisplayName = nameof(UpdateOnlyName))]
+        [Trait("Domain", "Category - Aggregates")]
+        public void UpdateOnlyName()
+        {
+            var createData = new
+            {
+                Name = "New category name",
+                Description = "New category description",
+            };
+
+            DomainCategoryEntity category = new DomainCategoryEntity(createData.Name, createData.Description);
+
+            var updatedData = new
+            {
+                Name = "Updated category name",
+            };
+
+            category.Update(updatedData.Name);
+
+            Assert.Equal(category.Name, updatedData.Name);
+        }
+
+        [Fact(DisplayName = nameof(UpdateOnlyDesctiption))]
+        [Trait("Domain", "Category - Aggregates")]
+        public void UpdateOnlyDesctiption()
+        {
+            var createData = new
+            {
+                Name = "New category name",
+                Description = "New category description",
+            };
+
+            DomainCategoryEntity category = new DomainCategoryEntity(createData.Name, createData.Description);
+
+            var updatedData = new
+            {
+                Description = "Updated category description",
+            };
+
+            category.Update(null, updatedData.Description);
+
+            Assert.Equal(category.Description, updatedData.Description);
+        }
+
         private static string RandomChar(int minLength)
         {
             int random = new Random().Next(1, 10);
