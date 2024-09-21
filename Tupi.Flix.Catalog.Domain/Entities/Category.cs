@@ -1,14 +1,14 @@
 ﻿using Tupi.Flix.Catalog.Domain.Execeptions;
+using Tupi.Flix.Catalog.Domain.SeedWork;
 
 namespace Tupi.Flix.Catalog.Domain.Entities
 {
-    public class Category
+    public class Category : AggregateRoot
     {
-        public Category(string name, string description, bool isActive = true)
+        public Category(string name, string description, bool isActive = true) : base() 
         {
             Name = name;
             Description = description;
-            Id = Guid.NewGuid();
             CreatedAt = DateTime.Now;
             IsActive = isActive;
 
@@ -17,7 +17,6 @@ namespace Tupi.Flix.Catalog.Domain.Entities
 
         public string Name { get; private set; }
         public string Description { get; private set; }
-        public Guid Id { get; private set; }
         public DateTime CreatedAt { get; private set; }
         public bool IsActive { get; private set; }
 
