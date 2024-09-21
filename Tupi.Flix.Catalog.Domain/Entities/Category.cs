@@ -45,6 +45,18 @@ namespace Tupi.Flix.Catalog.Domain.Entities
             }
         }
 
+        public void Activate()
+        {
+            IsActive = true;
+            Validate();
+        }
+
+        public void Dectivate()
+        {
+            IsActive = false;
+            Validate();
+        }
+
         private void ValidateDescription()
         {
             if (Description == null)
