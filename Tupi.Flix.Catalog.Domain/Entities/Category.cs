@@ -57,6 +57,13 @@ namespace Tupi.Flix.Catalog.Domain.Entities
             Validate();
         }
 
+        public void Update(string? name = null, string? description = null)
+        {
+            Name = name ?? Name;
+            Description = description ?? Description;
+            Validate();
+        }
+
         private void ValidateDescription()
         {
             if (Description == null)
