@@ -1,4 +1,5 @@
-﻿using Tupi.Flix.Catalog.Domain.Execeptions;
+﻿using FluentAssertions;
+using Tupi.Flix.Catalog.Domain.Execeptions;
 using DomainCategoryEntity = Tupi.Flix.Catalog.Domain.Entities.Category;
 
 namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
@@ -19,14 +20,14 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
             var category = new DomainCategoryEntity(validData.Name, validData.Description);
             var dateTimeAfter = DateTime.Now;
 
-            Assert.NotNull(category);
-            Assert.Equal(validData.Name, category.Name);
-            Assert.Equal(validData.Description, category.Description);
-            Assert.NotEqual(default(Guid), category.Id);
-            Assert.NotEqual(default(DateTime), category.CreatedAt);
-            Assert.True(category.CreatedAt > dateTimeBefore);
-            Assert.True(category.CreatedAt < dateTimeAfter);
-            Assert.True(category.IsActive);
+            category.Should().NotBeNull();
+            category.Name.Should().Be(validData.Name);
+            category.Description.Should().Be(validData.Description);
+            category.Id.Should().NotBe(default(Guid));
+            category.CreatedAt.Should().NotBeSameDateAs(default(DateTime));
+            (category.CreatedAt > dateTimeBefore).Should().BeTrue();
+            (category.CreatedAt < dateTimeAfter).Should().BeTrue();
+            category.IsActive.Should().BeTrue();
         }
 
         [Theory(DisplayName = nameof(InstantiateWithIsActiveStatus))]
@@ -45,14 +46,14 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
             var category = new DomainCategoryEntity(validData.Name, validData.Description, isActive);
             var dateTimeAfter = DateTime.Now;
 
-            Assert.NotNull(category);
-            Assert.Equal(validData.Name, category.Name);
-            Assert.Equal(validData.Description, category.Description);
-            Assert.NotEqual(default(Guid), category.Id);
-            Assert.NotEqual(default(DateTime), category.CreatedAt);
-            Assert.True(category.CreatedAt > dateTimeBefore);
-            Assert.True(category.CreatedAt < dateTimeAfter);
-            Assert.Equal(category.IsActive, isActive);
+            category.Should().NotBeNull();
+            category.Name.Should().Be(validData.Name);
+            category.Description.Should().Be(validData.Description);
+            category.Id.Should().NotBe(default(Guid));
+            category.CreatedAt.Should().NotBeSameDateAs(default(DateTime));
+            (category.CreatedAt > dateTimeBefore).Should().BeTrue();
+            (category.CreatedAt < dateTimeAfter).Should().BeTrue();
+            category.IsActive.Should().Be(isActive);
         }
 
         [Fact(DisplayName = nameof(ActivateCategory))]
@@ -65,11 +66,10 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
                 Description = "category description",
             };
 
-            var category = new DomainCategoryEntity(validData.Name, validData.Description, false);
-            Assert.True(!category.IsActive);
+            DomainCategoryEntity category = new(validData.Name, validData.Description, false);
+            category.IsActive.Should().BeFalse();
             category.Activate();
-            Assert.True(category.IsActive);
-
+            category.IsActive.Should().BeTrue();
         }
 
         [Fact(DisplayName = nameof(DeactivateCategory))]
@@ -83,10 +83,9 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
             };
 
             var category = new DomainCategoryEntity(validData.Name, validData.Description, true);
-            Assert.True(category.IsActive);
+            category.IsActive.Should().BeTrue();
             category.Dectivate();
-            Assert.True(!category.IsActive);
-
+            category.IsActive.Should().BeFalse();
         }
 
         [Theory(DisplayName = nameof(ThrowErrorWhenNameIsEmpty))]
@@ -97,8 +96,9 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
         public void ThrowErrorWhenNameIsEmpty(string? nameCategory)
         {
             Action action = () => new DomainCategoryEntity(nameCategory!, "category description");
-            var expection = Assert.Throws<EntityValidationException>(() => action());
-            Assert.Equal("Name should not be empty or null", expection.Message);
+            action.Should()
+                .Throw<EntityValidationException>()
+                .WithMessage("Name should not be empty or null");
         }
 
         [Fact(DisplayName = nameof(ThrowErrorWhenDescriptionIsNull))]
@@ -106,8 +106,9 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
         public void ThrowErrorWhenDescriptionIsNull()
         {
             Action action = () => new DomainCategoryEntity("Name Category", null!);
-            var expection = Assert.Throws<EntityValidationException>(() => action());
-            Assert.Equal("Description should not be null", expection.Message);
+            action.Should()
+               .Throw<EntityValidationException>()
+               .WithMessage("Description should not be null");
         }
 
         [Theory(DisplayName = nameof(ThrowErrorWhenNameWithLessThreeChar))]
@@ -115,8 +116,9 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
         [InlineData("1")]
         public void ThrowErrorWhenNameWithLessThreeChar(string invalidName) {
             Action action = () => new DomainCategoryEntity(invalidName, "Description Category");
-            var exeption = Assert .Throws<EntityValidationException>(()=> action());
-            Assert.Equal("Name not should be less than 3 character", exeption.Message);
+            action.Should()
+               .Throw<EntityValidationException>()
+               .WithMessage("Name not should be less than 3 character");
         } 
 
         [Fact(DisplayName = nameof(ThrowErrorWhenNameWithMoreOneHundredChar))]
@@ -125,9 +127,9 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
         {
             string invalidName = RandomChar(100);
             Action action = () => new DomainCategoryEntity(invalidName, "Description Category");
-            Console.WriteLine(invalidName);
-            var exeption = Assert.Throws<EntityValidationException>(() => action());
-            Assert.Equal("Name not should be more than 100 character", exeption.Message);
+            action.Should()
+               .Throw<EntityValidationException>()
+               .WithMessage("Name not should be more than 100 character");
         }
 
         [Fact(DisplayName = nameof(ThrowErrorWhenDescriptionWithMoreOneThousandChar))]
@@ -136,8 +138,9 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
         {
             string invalidDescription = RandomChar(10_000);
             Action action = () => new DomainCategoryEntity("Name category", invalidDescription);
-            var exeption = Assert.Throws<EntityValidationException>(() => action());
-            Assert.Equal("Description should be less than 10000 character", exeption.Message);
+            action.Should()
+               .Throw<EntityValidationException>()
+               .WithMessage("Description should be less than 10000 character");
         }
 
         [Fact(DisplayName = nameof(Update))]
@@ -159,9 +162,8 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
             };
 
             category.Update(updatedData.Name, updatedData.Description);
-
-            Assert.Equal(category.Name, updatedData.Name);
-            Assert.Equal(category.Description, updatedData.Description);
+            category.Name.Should().Be(updatedData.Name);
+            category.Description.Should().Be(updatedData.Description);
         }
 
         [Fact(DisplayName = nameof(UpdateOnlyName))]
@@ -182,8 +184,7 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
             };
 
             category.Update(updatedData.Name);
-
-            Assert.Equal(category.Name, updatedData.Name);
+            category.Name.Should().Be(updatedData.Name);
         }
 
         [Fact(DisplayName = nameof(UpdateOnlyDesctiption))]
@@ -204,8 +205,7 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
             };
 
             category.Update(null, updatedData.Description);
-
-            Assert.Equal(category.Description, updatedData.Description);
+            category.Description.Should().Be(updatedData.Description);
         }
 
         [Theory(DisplayName = nameof(ThrowErrorWhenUpdateNameWithLessThreeChar))]
@@ -215,9 +215,10 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
         public void ThrowErrorWhenUpdateNameWithLessThreeChar(string invalidName)
         {
             DomainCategoryEntity category = new("Valida name", "decription category");
-            void action() => category.Update(invalidName);
-            EntityValidationException exception = Assert.Throws<EntityValidationException>(action);
-            Assert.Equal("Name not should be less than 3 character", exception.Message);
+            Action action = () => category.Update(invalidName);
+            action.Should()
+               .Throw<EntityValidationException>()
+               .WithMessage("Name not should be less than 3 character");
         }
 
         [Fact(DisplayName = nameof(ThrowErrorWhenUpdateNameWithMoreOneHundredChar))]
@@ -226,9 +227,10 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
         {
             string invalidName = RandomChar(100);
             DomainCategoryEntity category = new("Valida name", "decription category");
-            void action() => category.Update(invalidName);
-            EntityValidationException exception = Assert.Throws<EntityValidationException>(action);
-            Assert.Equal("Name not should be more than 100 character", exception.Message);
+            Action action = () => category.Update(invalidName);
+            action.Should()
+                .Throw<EntityValidationException>()
+                .WithMessage("Name not should be more than 100 character");
         }
 
         [Fact(DisplayName = nameof(ThrowErrorWhenUpdateDescriptionWithMoreOneThousandChar))]
@@ -238,8 +240,9 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
             string invalidDescription = RandomChar(10_000);
             DomainCategoryEntity category = new("Name category", "valid description");
             Action action = () => category.Update(null, invalidDescription);
-            EntityValidationException exception = Assert.Throws<EntityValidationException>(() => action());
-            Assert.Equal("Description should be less than 10000 character", exception.Message);
+            action.Should()
+                .Throw<EntityValidationException>()
+                .WithMessage("Description should be less than 10000 character");
         }
 
         private static string RandomChar(int minLength)
