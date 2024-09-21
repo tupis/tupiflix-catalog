@@ -23,14 +23,38 @@ namespace Tupi.Flix.Catalog.Domain.Entities
 
         public void Validate()
         {
+            ValidateName();
+            ValidateDescription();
+        }
+
+        private void ValidateName()
+        {
             if (String.IsNullOrWhiteSpace(Name))
             {
                 throw new EntityValidationException($"{nameof(Name)} should not be empty or null");
             }
 
+            if (Name.Length < 3)
+            {
+                throw new EntityValidationException($"{nameof(Name)} not should be less than 3 character");
+            }
+
+            if (Name.Length > 100)
+            {
+                throw new EntityValidationException($"{nameof(Name)} not should be more than 100 character");
+            }
+        }
+
+        private void ValidateDescription()
+        {
             if (Description == null)
             {
                 throw new EntityValidationException($"{nameof(Description)} should not be null");
+            }
+            
+            if(Description.Length > 10000)
+            {
+                throw new EntityValidationException($"{nameof(Description)} should be less than 10000 character");
             }
         }
     }

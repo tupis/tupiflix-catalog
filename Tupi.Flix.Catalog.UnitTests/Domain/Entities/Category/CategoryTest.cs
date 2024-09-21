@@ -75,5 +75,43 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
             var expection = Assert.Throws<EntityValidationException>(() => action());
             Assert.Equal("Description should not be null", expection.Message);
         }
+
+        [Theory(DisplayName = nameof(ThrowErrorWhenNameWithLessThreeChar))]
+        [Trait("Domain", "Category - Aggregates")]
+        [InlineData("1")]
+        public void ThrowErrorWhenNameWithLessThreeChar(string invalidName) {
+            Action action = () => new DomainCategoryEntity(invalidName, "Description Category");
+            var exeption = Assert .Throws<EntityValidationException>(()=> action());
+            Assert.Equal("Name not should be less than 3 character", exeption.Message);
+        } 
+
+        [Fact(DisplayName = nameof(ThrowErrorWhenNameWithMoreOneHundredChar))]
+        [Trait("Domain", "Category - Aggregates")]
+        public void ThrowErrorWhenNameWithMoreOneHundredChar()
+        {
+            string invalidName = RandomChar(100);
+            Action action = () => new DomainCategoryEntity(invalidName, "Description Category");
+            Console.WriteLine(invalidName);
+            var exeption = Assert.Throws<EntityValidationException>(() => action());
+            Assert.Equal("Name not should be more than 100 character", exeption.Message);
+        }
+
+        [Fact(DisplayName = nameof(ThrowErrorWhenDescriptionWithMoreOneThousandChar))]
+        [Trait("Domain", "Category - Aggregates")]
+        public void ThrowErrorWhenDescriptionWithMoreOneThousandChar()
+        {
+            string invalidDescription = RandomChar(10_000);
+            Action action = () => new DomainCategoryEntity("Name category", invalidDescription);
+            var exeption = Assert.Throws<EntityValidationException>(() => action());
+            Assert.Equal("Description should be less than 10000 character", exeption.Message);
+        }
+
+        private static string RandomChar(int minLength)
+        {
+            int random = new Random().Next(1, 10);
+            int MIN_RANGE = minLength;
+            int MAX_RANGE = MIN_RANGE * random;
+            return String.Join(null, Enumerable.Range(MIN_RANGE, MAX_RANGE).ToArray());
+        }
     }
 }
