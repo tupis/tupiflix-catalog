@@ -55,6 +55,40 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
             Assert.Equal(category.IsActive, isActive);
         }
 
+        [Fact(DisplayName = nameof(ActivateCategory))]
+        [Trait("Domain", "Category - Aggregates")]
+        public void ActivateCategory()
+        {
+            var validData = new
+            {
+                Name = "category name",
+                Description = "category description",
+            };
+
+            var category = new DomainCategoryEntity(validData.Name, validData.Description, false);
+            Assert.True(!category.IsActive);
+            category.Activate();
+            Assert.True(category.IsActive);
+
+        }
+
+        [Fact(DisplayName = nameof(DeactivateCategory))]
+        [Trait("Domain", "Category - Aggregates")]
+        public void DeactivateCategory()
+        {
+            var validData = new
+            {
+                Name = "category name",
+                Description = "category description",
+            };
+
+            var category = new DomainCategoryEntity(validData.Name, validData.Description, true);
+            Assert.True(category.IsActive);
+            category.Dectivate();
+            Assert.True(!category.IsActive);
+
+        }
+
         [Theory(DisplayName = nameof(ThrowErrorWhenNameIsEmpty))]
         [Trait("Domain", "Category - Aggregates")]
         [InlineData("")]
