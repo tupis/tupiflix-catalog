@@ -208,6 +208,40 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
             Assert.Equal(category.Description, updatedData.Description);
         }
 
+        [Theory(DisplayName = nameof(ThrowErrorWhenUpdateNameWithLessThreeChar))]
+        [Trait("Domain", "Category - Aggregates")]
+        [InlineData("1")]
+        [InlineData("12")]
+        public void ThrowErrorWhenUpdateNameWithLessThreeChar(string invalidName)
+        {
+            DomainCategoryEntity category = new("Valida name", "decription category");
+            void action() => category.Update(invalidName);
+            EntityValidationException exception = Assert.Throws<EntityValidationException>(action);
+            Assert.Equal("Name not should be less than 3 character", exception.Message);
+        }
+
+        [Fact(DisplayName = nameof(ThrowErrorWhenUpdateNameWithMoreOneHundredChar))]
+        [Trait("Domain", "Category - Aggregates")]
+        public void ThrowErrorWhenUpdateNameWithMoreOneHundredChar()
+        {
+            string invalidName = RandomChar(100);
+            DomainCategoryEntity category = new("Valida name", "decription category");
+            void action() => category.Update(invalidName);
+            EntityValidationException exception = Assert.Throws<EntityValidationException>(action);
+            Assert.Equal("Name not should be more than 100 character", exception.Message);
+        }
+
+        [Fact(DisplayName = nameof(ThrowErrorWhenUpdateDescriptionWithMoreOneThousandChar))]
+        [Trait("Domain", "Category - Aggregates")]
+        public void ThrowErrorWhenUpdateDescriptionWithMoreOneThousandChar()
+        {
+            string invalidDescription = RandomChar(10_000);
+            DomainCategoryEntity category = new("Name category", "valid description");
+            Action action = () => category.Update(null, invalidDescription);
+            EntityValidationException exception = Assert.Throws<EntityValidationException>(() => action());
+            Assert.Equal("Description should be less than 10000 character", exception.Message);
+        }
+
         private static string RandomChar(int minLength)
         {
             int random = new Random().Next(1, 10);
