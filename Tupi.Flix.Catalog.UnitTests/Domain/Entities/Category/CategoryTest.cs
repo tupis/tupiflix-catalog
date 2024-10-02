@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Microsoft.VisualBasic;
 using Tupi.Flix.Catalog.Domain.Execeptions;
 using DomainCategoryEntity = Tupi.Flix.Catalog.Domain.Entities.Category;
 
@@ -100,7 +101,7 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
 
         [Theory(DisplayName = nameof(ThrowErrorWhenNameWithLessThreeChar))]
         [Trait("Domain", "Category - Aggregates")]
-        [InlineData("1")]
+        [MemberData(nameof(GetNamesWithLessThreeChar), parameters: 10)]
         public void ThrowErrorWhenNameWithLessThreeChar(string invalidName) {
             Action action = () => new DomainCategoryEntity(invalidName, "Description Category");
             action.Should()
@@ -112,7 +113,7 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
         [Trait("Domain", "Category - Aggregates")]
         public void ThrowErrorWhenNameWithMoreOneHundredChar()
         {
-            string invalidName = RandomChar(100);
+            string invalidName = _categoryMock.Faker.Lorem.Letter(102);
             Action action = () => new DomainCategoryEntity(invalidName, "Description Category");
             action.Should()
                .Throw<EntityValidationException>()
@@ -123,7 +124,7 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
         [Trait("Domain", "Category - Aggregates")]
         public void ThrowErrorWhenDescriptionWithMoreOneThousandChar()
         {
-            string invalidDescription = RandomChar(10_000);
+            string invalidDescription = _categoryMock.Faker.Lorem.Letter(10_001); ;
             Action action = () => new DomainCategoryEntity("Name category", invalidDescription);
             action.Should()
                .Throw<EntityValidationException>()
@@ -138,11 +139,7 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
 
             DomainCategoryEntity category = new(createData.Name, createData.Description);
 
-            var updatedData = new
-            {
-                Name = "Updated category name",
-                Description = "Updated category description",
-            };
+            var updatedData = _categoryMock.CreateValidCategory();
 
             category.Update(updatedData.Name, updatedData.Description);
             category.Name.Should().Be(updatedData.Name);
@@ -157,10 +154,7 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
 
             DomainCategoryEntity category = new(createData.Name, createData.Description);
 
-            var updatedData = new
-            {
-                Name = "Updated category name",
-            };
+            var updatedData = _categoryMock.CreateValidCategory();
 
             category.Update(updatedData.Name);
             category.Name.Should().Be(updatedData.Name);
@@ -172,10 +166,7 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
         {
             DomainCategoryEntity category = _categoryMock.CreateValidCategory();
 
-            var updatedData = new
-            {
-                Description = "Updated category description",
-            };
+            var updatedData = _categoryMock.CreateValidCategory();
 
             category.Update(null, updatedData.Description);
             category.Description.Should().Be(updatedData.Description);
@@ -183,8 +174,7 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
 
         [Theory(DisplayName = nameof(ThrowErrorWhenUpdateNameWithLessThreeChar))]
         [Trait("Domain", "Category - Aggregates")]
-        [InlineData("1")]
-        [InlineData("12")]
+        [MemberData(nameof(GetNamesWithLessThreeChar), parameters: 10)]
         public void ThrowErrorWhenUpdateNameWithLessThreeChar(string invalidName)
         {
             DomainCategoryEntity category = _categoryMock.CreateValidCategory();
@@ -198,7 +188,7 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
         [Trait("Domain", "Category - Aggregates")]
         public void ThrowErrorWhenUpdateNameWithMoreOneHundredChar()
         {
-            string invalidName = RandomChar(100);
+            string invalidName = _categoryMock.Faker.Lorem.Letter(102);
             DomainCategoryEntity category = _categoryMock.CreateValidCategory();
             Action action = () => category.Update(invalidName);
             action.Should()
@@ -210,12 +200,23 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
         [Trait("Domain", "Category - Aggregates")]
         public void ThrowErrorWhenUpdateDescriptionWithMoreOneThousandChar()
         {
-            string invalidDescription = RandomChar(10_000);
+            string invalidDescription = _categoryMock.Faker.Lorem.Letter(10_001);
             DomainCategoryEntity category = _categoryMock.CreateValidCategory();
             Action action = () => category.Update(null, invalidDescription);
             action.Should()
                 .Throw<EntityValidationException>()
                 .WithMessage("Description should be less than 10000 character");
+        }
+
+        public static IEnumerable<object[]> GetNamesWithLessThreeChar(int numberOfTest = 6)
+        {
+            var mock = new CategoryTestMock();
+
+            for (int i = 0; i < numberOfTest; i++)
+            {
+                bool isOdd = i % 2 == 0;
+                yield return new object[] { mock.GetValidCategoryName()[..(isOdd ? 1 : 2)] };
+            }
         }
 
         private static string RandomChar(int minLength)
