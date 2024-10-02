@@ -4,17 +4,16 @@ using DomainCategoryEntity = Tupi.Flix.Catalog.Domain.Entities.Category;
 
 namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
 {
-    public class CategoryTest
+    [Collection(nameof(CategoryTestMock))]
+    public class CategoryTest(CategoryTestMock categoryMock)
     {
+        private readonly CategoryTestMock _categoryMock = categoryMock;
+
         [Fact(DisplayName = nameof(Instantiate))]
         [Trait("Domain", "Category - Aggregates")]
         public void Instantiate()
         {
-            var validData = new
-            {
-                Name = "category name",
-                Description = "category description",
-            };
+            var validData = _categoryMock.CreateValidCategory();
 
             var dateTimeBefore = DateTime.Now;
             var category = new DomainCategoryEntity(validData.Name, validData.Description);
@@ -36,11 +35,7 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
         [InlineData(false)]
         public void InstantiateWithIsActiveStatus(bool isActive)
         {
-            var validData = new
-            {
-                Name = "category name",
-                Description = "category description",
-            };
+            var validData = _categoryMock.CreateValidCategory();
 
             var dateTimeBefore = DateTime.Now;
             var category = new DomainCategoryEntity(validData.Name, validData.Description, isActive);
@@ -60,11 +55,7 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
         [Trait("Domain", "Category - Aggregates")]
         public void ActivateCategory()
         {
-            var validData = new
-            {
-                Name = "category name",
-                Description = "category description",
-            };
+            var validData = _categoryMock.CreateValidCategory();
 
             DomainCategoryEntity category = new(validData.Name, validData.Description, false);
             category.IsActive.Should().BeFalse();
@@ -76,11 +67,7 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
         [Trait("Domain", "Category - Aggregates")]
         public void DeactivateCategory()
         {
-            var validData = new
-            {
-                Name = "category name",
-                Description = "category description",
-            };
+            var validData = _categoryMock.CreateValidCategory();
 
             var category = new DomainCategoryEntity(validData.Name, validData.Description, true);
             category.IsActive.Should().BeTrue();
@@ -147,11 +134,7 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
         [Trait("Domain", "Category - Aggregates")]
         public void Update()
         {
-            var createData = new
-            {
-                Name = "New category name",
-                Description = "New category description",
-            };
+            var createData = _categoryMock.CreateValidCategory();
 
             DomainCategoryEntity category = new(createData.Name, createData.Description);
 
@@ -170,13 +153,9 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
         [Trait("Domain", "Category - Aggregates")]
         public void UpdateOnlyName()
         {
-            var createData = new
-            {
-                Name = "New category name",
-                Description = "New category description",
-            };
+            var createData = _categoryMock.CreateValidCategory();
 
-            DomainCategoryEntity category = new DomainCategoryEntity(createData.Name, createData.Description);
+            DomainCategoryEntity category = new(createData.Name, createData.Description);
 
             var updatedData = new
             {
@@ -191,13 +170,7 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
         [Trait("Domain", "Category - Aggregates")]
         public void UpdateOnlyDesctiption()
         {
-            var createData = new
-            {
-                Name = "New category name",
-                Description = "New category description",
-            };
-
-            DomainCategoryEntity category = new DomainCategoryEntity(createData.Name, createData.Description);
+            DomainCategoryEntity category = _categoryMock.CreateValidCategory();
 
             var updatedData = new
             {
@@ -214,7 +187,7 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
         [InlineData("12")]
         public void ThrowErrorWhenUpdateNameWithLessThreeChar(string invalidName)
         {
-            DomainCategoryEntity category = new("Valida name", "decription category");
+            DomainCategoryEntity category = _categoryMock.CreateValidCategory();
             Action action = () => category.Update(invalidName);
             action.Should()
                .Throw<EntityValidationException>()
@@ -226,7 +199,7 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
         public void ThrowErrorWhenUpdateNameWithMoreOneHundredChar()
         {
             string invalidName = RandomChar(100);
-            DomainCategoryEntity category = new("Valida name", "decription category");
+            DomainCategoryEntity category = _categoryMock.CreateValidCategory();
             Action action = () => category.Update(invalidName);
             action.Should()
                 .Throw<EntityValidationException>()
@@ -238,7 +211,7 @@ namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
         public void ThrowErrorWhenUpdateDescriptionWithMoreOneThousandChar()
         {
             string invalidDescription = RandomChar(10_000);
-            DomainCategoryEntity category = new("Name category", "valid description");
+            DomainCategoryEntity category = _categoryMock.CreateValidCategory();
             Action action = () => category.Update(null, invalidDescription);
             action.Should()
                 .Throw<EntityValidationException>()
