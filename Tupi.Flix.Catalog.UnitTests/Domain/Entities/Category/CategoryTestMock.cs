@@ -1,5 +1,5 @@
 ﻿using System.Xml;
-using Tupi.Flix.Catalog.UnitTests.Domain.Common;
+using Tupi.Flix.Catalog.UnitTests.Common;
 using DomainCategoryEntity = Tupi.Flix.Catalog.Domain.Entities.Category;
 
 namespace Tupi.Flix.Catalog.UnitTests.Domain.Entities.Category
