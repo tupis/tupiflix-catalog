@@ -8,15 +8,19 @@ using UseCasesCreateCategory = Tupi.Flix.Catalog.Application.UseCases.Category.C
 
 namespace Tupi.Flix.Catalog.UnitTests.Application.CreateCategory
 {
-    public class CreateCategoryTest
+    [Collection(nameof(CreateCategoryMock))]
+    public class CreateCategoryTest(CreateCategoryMock mock)
     {
+
+        CreateCategoryMock _mock = mock;
+
         [Fact(DisplayName = nameof(CreateCategory))]
         [Trait("Application", "Create Category - Use Cases")]
         public async void CreateCategory()
         {
             var expectedCategory = CreateMockCategoryEntity();
-            var repositoryMock = new Mock<ICategoryRepository>();
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
+            var repositoryMock = _mock.CreateRepository;
+            var unitOfWorkMock = _mock.CreateUnitOfWork;
             var useCase = new UseCasesCreateCategory.CreateCategory(repositoryMock.Object, unitOfWorkMock.Object);
             var input = new UseCasesCreateCategory.CreateCategoryInput(expectedCategory.Name, expectedCategory.Description, expectedCategory.IsActive);
             var output = await useCase.Execute(input, CancellationToken.None);
